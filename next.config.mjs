@@ -2,8 +2,7 @@
 const nextConfig = {
   reactCompiler: true,
   output: 'export',
-  images: { unoptimized: true },
-  basePath: '/wfx-prototype-hub',
+  images: { unoptimized: true }
 };
 
 export default nextConfig;

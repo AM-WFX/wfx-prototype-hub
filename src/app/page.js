@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import ShareModal from "@/components/ShareModal";
 
 function MainDashboardShell() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const currentView = searchParams.get("view") === "widget" ? "widget" : "content";
   
   // Dashboard Core State
@@ -63,7 +64,7 @@ function MainDashboardShell() {
     <div className="absolute inset-0 flex flex-col min-w-0 bg-[#FFFFFF] overflow-hidden font-['Inter']" onClick={handleAppClick}>
       
       {/* ========================================== */}
-      {/* 1️⃣ HEADER                                 */}
+      {/* 1️⃣ HEADER                                  */}
       {/* ========================================== */}
       <div className="flex flex-row justify-between items-center px-[32px] pt-[24px] pb-[16px] shrink-0">
         <h1 className="font-bold text-[24px] leading-[32px] text-[#1F1F32]">
@@ -76,7 +77,7 @@ function MainDashboardShell() {
       </div>
 
       {/* ========================================== */}
-      {/* 2️⃣ TABS & TOOLBAR                         */}
+      {/* 2️⃣ TABS & TOOLBAR                          */}
       {/* ========================================== */}
       <div className="flex flex-row justify-between items-end px-[32px] border-b border-[#F2F2F8] shrink-0">
         
@@ -190,7 +191,6 @@ function MainDashboardShell() {
       {/* ========================================== */}
       {/* 4️⃣ CORE TABLE AREA                          */}
       {/* ========================================== */}
-      {/* The padding is now on this outer flex container. The scrollbar and overflow are contained INSIDE the border, physically preventing layout leaks */}
       <div className="flex-1 flex flex-col overflow-hidden px-[32px] py-[16px]">
         <div className="flex-1 overflow-auto custom-scrollbar border border-[#DFDDE7] rounded-[4px] bg-white w-full">
           <div className="flex flex-col min-w-[1100px]">
@@ -259,7 +259,13 @@ function MainDashboardShell() {
                       <div className="w-[20px]" />
                     )}
                     
-                    <span className="font-normal text-[14px] text-[#3D3C52] truncate max-w-[280px]">{row.name}</span>
+                    {/* CLICKABLE ROW NAME */}
+                    <span 
+                      onClick={() => !row.isFolder && router.push("/dvm")}
+                      className={`font-normal text-[14px] text-[#3D3C52] truncate max-w-[280px] ${!row.isFolder ? 'cursor-pointer hover:text-[#0975D7] hover:underline' : ''}`}
+                    >
+                      {row.name}
+                    </span>
                     
                     {row.count && (
                       <div className="flex items-center justify-center px-[8px] h-[28px] bg-[#F6F6F9] rounded-[32px] shrink-0 ml-1 border border-[#DFDDE7]">
@@ -270,10 +276,28 @@ function MainDashboardShell() {
                     {/* Inline Hover Action Group */}
                     {isHovered && !row.isFolder && (
                       <div className="absolute right-[16px] flex items-center gap-[4px] z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]">
+                        
+                        {/* PLAY BUTTON (NAVIGATES TO /dvm) */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push("/dvm");
+                          }}
+                          title="Preview"
+                          className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]"
+                        >
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                         </button>
-                        <button className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]">
+
+                        {/* PENCIL EDIT BUTTON (NAVIGATES TO /dvm) */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push("/dvm");
+                          }}
+                          title="Edit"
+                          className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]"
+                        >
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                         </button>
                         

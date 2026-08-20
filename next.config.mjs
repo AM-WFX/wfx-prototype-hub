@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactCompiler: true,
+  output: 'export',
+  images: { unoptimized: true },
+  basePath: '/wfx-prototype-hub',
 };
 
 export default nextConfig;

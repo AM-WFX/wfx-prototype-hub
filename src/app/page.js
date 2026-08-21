@@ -5,10 +5,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ShareModal from "@/components/ShareModal";
 
 function MainDashboardShell() {
-  const searchParams = useSearchParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const currentView = searchParams.get("view") === "widget" ? "widget" : "content";
   
+  // --- 🎛️ VARIANT CONTROLLER ---
+  const [activeVariant, setActiveVariant] = useState('v1'); // 'v1', 'v2', 'v3'
+
   // Dashboard Core State
   const [subTab, setSubTab] = useState("Ready"); 
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,8 +66,20 @@ function MainDashboardShell() {
   return (
     <div className="absolute inset-0 flex flex-col min-w-0 bg-[#FFFFFF] overflow-hidden font-['Inter']" onClick={handleAppClick}>
       
+      {/* --- 🎛️ MINIFIED VARIANT TOGGLE (Invisible until hovered over in the top right corner) --- */}
+      <div className={`absolute top-0 right-0 p-6 z-[100] opacity-0 hover:opacity-100 transition-opacity duration-300 ${isShareModalOpen ? 'hidden' : 'block'}`}>
+        <div className="flex items-center gap-0.5 bg-white border border-[#dfdde7] rounded-md p-1 shadow-md scale-90 origin-top-right">
+          {['v1', 'v2', 'v3'].map(v => (
+            <label key={v} className={`flex items-center px-2 py-1 rounded cursor-pointer text-[11px] font-bold uppercase transition-all ${activeVariant === v ? 'bg-blue-50 text-[#0975D7]' : 'text-[#6B697B] hover:bg-gray-50'}`}>
+              <input type="radio" name="variant" checked={activeVariant === v} onChange={() => setActiveVariant(v)} className="hidden" />
+              {v}
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* ========================================== */}
-      {/* 1️⃣ HEADER                                  */}
+      {/* 1️⃣ HEADER                                 */}
       {/* ========================================== */}
       <div className="flex flex-row justify-between items-center px-[32px] pt-[24px] pb-[16px] shrink-0">
         <h1 className="font-bold text-[24px] leading-[32px] text-[#1F1F32]">
@@ -77,7 +92,7 @@ function MainDashboardShell() {
       </div>
 
       {/* ========================================== */}
-      {/* 2️⃣ TABS & TOOLBAR                          */}
+      {/* 2️⃣ TABS & TOOLBAR                         */}
       {/* ========================================== */}
       <div className="flex flex-row justify-between items-end px-[32px] border-b border-[#F2F2F8] shrink-0">
         
@@ -259,13 +274,7 @@ function MainDashboardShell() {
                       <div className="w-[20px]" />
                     )}
                     
-                    {/* CLICKABLE ROW NAME */}
-                    <span 
-                      onClick={() => !row.isFolder && router.push("/dvm")}
-                      className={`font-normal text-[14px] text-[#3D3C52] truncate max-w-[280px] ${!row.isFolder ? 'cursor-pointer hover:text-[#0975D7] hover:underline' : ''}`}
-                    >
-                      {row.name}
-                    </span>
+                    <span className="font-normal text-[14px] text-[#3D3C52] truncate max-w-[280px]">{row.name}</span>
                     
                     {row.count && (
                       <div className="flex items-center justify-center px-[8px] h-[28px] bg-[#F6F6F9] rounded-[32px] shrink-0 ml-1 border border-[#DFDDE7]">
@@ -276,26 +285,16 @@ function MainDashboardShell() {
                     {/* Inline Hover Action Group */}
                     {isHovered && !row.isFolder && (
                       <div className="absolute right-[16px] flex items-center gap-[4px] z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                        
-                        {/* PLAY BUTTON (NAVIGATES TO /dvm) */}
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push("/dvm");
-                          }}
-                          title="Preview"
-                          className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]"
-                        >
+                        <button className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]">
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                         </button>
-
-                        {/* PENCIL EDIT BUTTON (NAVIGATES TO /dvm) */}
+                        
+                        {/* PENCIL BUTTON WITH ROUTER LINK */}
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            router.push("/dvm");
+                            router.push('/dvm');
                           }}
-                          title="Edit"
                           className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-transparent hover:bg-[#E2E8F0] transition-colors cursor-pointer text-[#6B697B]"
                         >
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
@@ -387,7 +386,7 @@ function MainDashboardShell() {
       {isShareModalOpen && (
         <ShareModal 
           onClose={() => setIsShareModalOpen(false)} 
-          activeVariant="v1" 
+          activeVariant={activeVariant} 
           allowEmbed={isEmbedAllowed} 
         />
       )}

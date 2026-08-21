@@ -15,7 +15,7 @@ function MainDashboardShell() {
   // Dashboard Core State
   const [subTab, setSubTab] = useState("Ready"); 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedItems, setSelectedItems] = useState([7]); 
+  const [selectedItems, setSelectedItems] = useState([]); 
   
   // Hover & Menu States
   const [hoveredRowId, setHoveredRowId] = useState(null);
